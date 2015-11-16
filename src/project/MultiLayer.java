@@ -5,7 +5,6 @@ import java.util.Random;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.MultilayerPerceptron;
-import weka.classifiers.functions.SMO;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -18,35 +17,28 @@ public class MultiLayer {
 	MultiLayer() {	
 		try {
 			DataSource trainsource = new DataSource("/home/megha/Desktop/trainingsetwekalatest.arff");
+			//DataSource trainsource = new DataSource("/media/megha/Dataset/trainingsetwekalatest.arff");
 			Instances traindata = trainsource.getDataSet();
 			DataSource testsource = new DataSource("/home/megha/Desktop/testsetlatest.arff");
+			//DataSource testsource = new DataSource("/media/megha/Dataset/testsetlatest.arff");
 			Instances testdata = testsource.getDataSet();
 			//Instance testdata = (Instance) testsource.getLoader();
-			// calss !=
-			
-			 
-			 //
 			
 		//	if (traindata.classIndex() == -9) {
-				//traindata.setClassIndex(traindata.numAttributes() -10);
+				//traindata.setClassIndex(traindata.numAttributes() -10); 
 				traindata.setClassIndex(traindata.numAttributes() -2);
-				/*
-			traindata.setClassIndex(traindata.attribute("class").index());
-			Classifier classifier = new SMO();
-			classifier.buildClassifier(traindata);
-			FilteredClassifier filteredClassifier = new FilteredClassifier();
-			filteredClassifier.setClassifier(classifier);
-			*/
 			
 			//}
-				/*
+				/* filter 
 				//String[] options = weka.core.Utils.splitOptions("-R 6 7 8 9 10 11 12 13");
 				String[] options = weka.core.Utils.splitOptions("-R 2 3 4 6 7 8 9 10 11 12 13");
 				Remove remove = new Remove();
 				remove.setOptions(options);
 				remove.setInputFormat(traindata);
-				Instances newData = Filter.useFilter(traindata, remove);
-				newData.setClassIndex(traindata.numAttributes() -2);
+				Instances newTrainData = Filter.useFilter(traindata, remove);
+				Instances newTestData = Filter.useFilter(testdata, remove);
+				newTrainData.setClassIndex(newTrainData.numAttributes() - 10);
+				newTestData.setClassIndex(newTestData.numAttributes() - 10);
 				*/
 				
 			
@@ -60,6 +52,7 @@ public class MultiLayer {
 			mlp.setOptions(Utils.splitOptions("-L 0.3 -M 0.2 -N 500 -V 0 -S 0 -E 20 -H 4"));
 			
 			mlp.buildClassifier(traindata);
+		//	mlp.buildClassifier(newTrainData);
 		//mlp.buildClassifier(newData);
 			
 			//Evaluation eval = new Evaluation(traindata);
@@ -71,15 +64,53 @@ public class MultiLayer {
 			//System.out.println(eval.toSummaryString());
 			double stockPriceStartDate = 0;
 			double stockPriceEndDate = 0; 
+			double stockOpenPriceStartDate = 0;
+			double stockOpenPriceEndDate = 0;			
 			double difference = 0;
 			double amount = 0;
+			
+			/*
+			int[][] a = new int[2][2];
 			for(int i = 0; i < testdata.numInstances(); i++) {
-			//	System.out.print(i);
-				/*
-				double label = mlp.classifyInstance(testdata.instance(i));
-				//labeled.
-				System.out.print(label);
-				*/
+				for(int j = 0; j < testdata.numInstances(); j++) {
+
+				
+					System.out.println(i+" "+j);
+			//	if (i == 0) {
+					stockOpenPriceStartDate = mlp.classifyInstance(testdata.instance(a[i][j]));					
+					System.out.println("Stock open price on start date is: "+stockOpenPriceStartDate+" $");
+				//	stockPriceStartDate = mlp.classifyInstance(testdata.instance(i));					
+					//System.out.println("Stock  close price on start date is: "+stockPriceStartDate+" $");
+					
+				//}
+					/*
+				if (i == 1) {
+					stockOpenPriceEndDate = mlp.classifyInstance(testdata.instance(i));
+					System.out.println("Stock open price on end date is: "+stockOpenPriceEndDate+" $");
+					stockPriceEndDate = mlp.classifyInstance(testdata.instance(i));
+					System.out.println("Stock close price on end date is: "+stockPriceEndDate+" $");
+					
+				}
+				
+			}
+			*/
+			/* filter 
+			for(int i = 0; i < newTestData.numInstances(); i++) {
+				
+				if (i == 0) {
+					stockPriceStartDate = mlp.classifyInstance(newTestData.instance(i));
+					//labeled.
+					System.out.println("Stock price on start date is: "+stockPriceStartDate+" $");					
+				}
+				if (i == 1) {
+					stockPriceEndDate = mlp.classifyInstance(newTestData.instance(i));
+					System.out.println("Stock price on end date is: "+stockPriceEndDate+" $");
+				}
+			}
+			*/
+			
+			for(int i = 0; i < testdata.numInstances(); i++) {
+	
 				if (i == 0) {
 					stockPriceStartDate = mlp.classifyInstance(testdata.instance(i));
 					//labeled.
@@ -90,6 +121,7 @@ public class MultiLayer {
 					System.out.println("Stock price on end date is: "+stockPriceEndDate+" $");
 				}
 			}
+		
 			difference = stockPriceEndDate - stockPriceStartDate;
 			if (difference > 0) {
 				System.out.println("Profit per stock is: "+ difference+" $");
